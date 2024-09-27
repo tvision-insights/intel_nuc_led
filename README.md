@@ -46,14 +46,6 @@ The `nuc_wmi` kernel module supports building and installing "from source" direc
 
 ### Installing Build Dependencies
 
-UBOS: you don't need to, it's in the repos: `pacman -S intel-nuc-wmi`
-
-If you want to build it anyway, you need:
-
-```
-pacman -S linux-headers base-develop
-```
-
 Ubuntu:
 
 ```
@@ -101,9 +93,6 @@ make dkms-uninstall
 Build and install using system packaging:
 
 ```
-# UBOS
-makepkg -i
-
 # Ubuntu
 make dkms-deb
 

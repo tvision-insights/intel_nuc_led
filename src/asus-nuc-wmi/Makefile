@@ -1,0 +1,42 @@
+obj-m := asus_nuc_wmi.o
+
+DKMS_MODULE := asus-nuc-wmi
+DKMS_MODULE_VERSION := 1.0
+KDIR ?= /lib/modules/$(KVERSION)/build
+KVERSION ?= $(shell uname -r)
+PWD := $(shell pwd)
+
+.PHONY: clean all dkms-add dkms-build dkms-deb dkms-install dkms-rpm dkms-uninstall install
+
+clean:
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
+
+all:
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
+
+dkms-add:
+	dkms add --force $(PWD)
+
+dkms-build: dkms-add
+	dkms build -m $(DKMS_MODULE) -v $(DKMS_MODULE_VERSION) -k $(KVERSION)
+
+dkms-deb: dkms-add
+	dkms mkdeb $(DKMS_MODULE)/$(DKMS_MODULE_VERSION) --source-only
+
+dkms-install: dkms-build
+	dkms install -m $(DKMS_MODULE) -v $(DKMS_MODULE_VERSION) -k $(KVERSION)
+	@depmod -a $(KVERSION)
+
+dkms-rpm: dkms-add
+	dkms mkrpm $(DKMS_MODULE)/$(DKMS_MODULE_VERSION) --source-only
+
+dkms-status:
+	dkms status $(DKMS_MODULE)/$(DKMS_MODULE_VERSION) -k $(KVERSION)
+
+dkms-uninstall:
+	dkms remove -m $(DKMS_MODULE) -v $(DKMS_MODULE_VERSION) --all
+	rm -rf /usr/src/$(DKMS_MODULE)-$(DKMS_MODULE_VERSION)/
+
+install:
+	$(MAKE) -C $(KDIR) M=$(PWD) modules_install
+	@depmod -a $(KVERSION)
