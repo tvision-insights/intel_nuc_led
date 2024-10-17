@@ -22,8 +22,12 @@ def switch_led_type_cli(cli_args=None):
        led_color_group: Selects the LED color group type to set..
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with the selected LED color group type or error message with
                failure error.

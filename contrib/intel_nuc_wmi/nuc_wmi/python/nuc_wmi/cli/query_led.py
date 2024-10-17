@@ -22,8 +22,12 @@ def query_led_color_type_cli(cli_args=None):
        led: Selects the LED to get the color type for.
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with color type of the selected LED or error message with
                failure error.
@@ -119,8 +123,12 @@ def query_led_control_items_cli(cli_args=None):
        led: Selects the LED to get the available control items for.
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with control items for the selected LED indicator option or
                error message with failure error.
@@ -242,8 +250,12 @@ def query_led_indicator_options_cli(cli_args=None):
        led: Selects the LED to get the indicator options for.
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with indicator options of the selected LED or error message with
                failure error.
@@ -333,8 +345,12 @@ def query_leds_cli(cli_args=None):
     CLI Args:
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with list of available LEDs or error message with
                failure error.

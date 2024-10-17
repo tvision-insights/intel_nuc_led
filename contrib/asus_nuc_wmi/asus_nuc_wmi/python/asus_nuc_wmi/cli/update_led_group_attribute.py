@@ -34,6 +34,8 @@ def update_led_group_attribute_cli(cli_args=None):
        sleep_state_led_blink_frequency: The LED blink frequency for the Power Button LED sleep state.
        sleep_state_led_brightness: The LED brightness for the Power Button LED sleep state.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the ASUS NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `asus_nuc_wmi.CONTROL_FILE` is used.
        --debug: Enable debug logging of read and write to the ASUS NUC LED control file to stderr.
@@ -49,6 +51,12 @@ def update_led_group_attribute_cli(cli_args=None):
             description='Update all Power Button LED group attributes.'
         )
 
+        parser.add_argument(
+            '-b',
+            '--blocking-file-lock',
+            action='store_true',
+            help='Acquire a blocking lock on the ASUS NUC WMI lock file instead of the default non blocking lock.'
+        )
         parser.add_argument(
             '-c',
             '--control-file',
@@ -121,7 +129,7 @@ def update_led_group_attribute_cli(cli_args=None):
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
-            acquire_file_lock(lock_file)
+            acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
             update_led_group_attribute(
                 LED_INDICATOR_OPTION.index(args.led_indicator_option),

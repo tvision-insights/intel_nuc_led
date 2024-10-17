@@ -21,6 +21,8 @@ def query_led_group_attribute_cli(cli_args=None): # pylint: disable=too-many-loc
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the ASUS NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `asus_nuc_wmi.CONTROL_FILE` is used.
        --debug: Enable debug logging of read and write to the ASUS NUC LED control file to stderr.
@@ -36,6 +38,12 @@ def query_led_group_attribute_cli(cli_args=None): # pylint: disable=too-many-loc
             description='List all Power Button LED group attributes.'
         )
 
+        parser.add_argument(
+            '-b',
+            '--blocking-file-lock',
+            action='store_true',
+            help='Acquire a blocking lock on the ASUS NUC WMI lock file instead of the default non blocking lock.'
+        )
         parser.add_argument(
             '-c',
             '--control-file',
@@ -58,7 +66,7 @@ def query_led_group_attribute_cli(cli_args=None): # pylint: disable=too-many-loc
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
-            acquire_file_lock(lock_file)
+            acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
             hdd_activity_behavior_range = defined_indexes(CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR)
             led_blink_behavior_range = defined_indexes(LED_BLINK_BEHAVIOR_MULTI_COLOR)

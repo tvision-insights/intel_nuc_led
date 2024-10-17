@@ -32,8 +32,12 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        led: Selects the LED to set the control item for.
        nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
+       --blocking-file-lock: Acquire a blocking lock on the NUC WMI lock file instead of the default
+                             non blocking lock.
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
+       --debug: Enable debug logging of read and write to the NUC LED control file to stderr.
+       --lock-file <lock_file>: The path to the NUC WMI lock file.
     Outputs:
        stdout: JSON object with control item value for the control item of the indicator option for the selected LED or
                error message with failure error.
