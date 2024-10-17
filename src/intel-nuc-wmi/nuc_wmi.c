@@ -153,8 +153,8 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
     if( !inWhite && inputBufferI < INPUT_BUFFER_SIZE ) {
         input_buffer[ inputBufferI++ ] = currentByte;
     }
-    if( inputBufferI != 5 ) {
-        pr_warn("NUC WMI received wrong number of bytes (5 needed): %d\n", inputBufferI );
+    if( inputBufferI != INPUT_BUFFER_SIZE) {
+        pr_warn("NUC WMI received wrong number of bytes (%u needed): %d\n", INPUT_BUFFER_SIZE, inputBufferI );
         return -EIO;
     }
 
@@ -164,13 +164,6 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 
     acpiInput.length = (acpi_size) inputBufferI-1;
     acpiInput.pointer = input_buffer+1;
-
-    //pr_info( "NUC WMI wmi_evaluate_method method=%02x, data: %02x %02x %02x %02x\n",
-    //        (unsigned char) input_buffer[0],
-    //        ((unsigned char *) acpiInput.pointer)[0],
-    //        ((unsigned char *) acpiInput.pointer)[1],
-    //        ((unsigned char *) acpiInput.pointer)[2],
-    //        ((unsigned char *) acpiInput.pointer)[3] );
 
     acpiStatus = wmi_evaluate_method(NUC_WMI_MGMT_GUID, 0, input_buffer[0],
                                  &acpiInput, &acpiOutput);
@@ -205,13 +198,22 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
                 size_t count, loff_t *off)
 {
     int len;
-    char line[16];
+    int output_buffer_pos;
+    char line[(OUTPUT_BUFFER_SIZE * 3) + 1];
+    char *linep = line;
     ssize_t ret;
 
-    sprintf( line, "%02x %02x %02x %02x\n", output_buffer[0], output_buffer[1], output_buffer[2], output_buffer[3] );
+    for (output_buffer_pos = 0; output_buffer_pos < OUTPUT_BUFFER_SIZE; output_buffer_pos++) {
+      len = snprintf(linep, 4, "%02x ", output_buffer[output_buffer_pos]); // len should always be 4
+      linep += len;  // overwrite the added \0 with the start of the next block
+    }
+
+    line[(OUTPUT_BUFFER_SIZE * 3) - 1] = '\n';
+    line[OUTPUT_BUFFER_SIZE * 3] = '\0';
 
     len = strlen(line);
-    ret = simple_read_from_buffer(buff, count, off, line, len + 1);
+
+    ret = simple_read_from_buffer(buff, count, off, line, len);
 
     // Clear buffer
     memset(output_buffer, 0xff, OUTPUT_BUFFER_SIZE);
