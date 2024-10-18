@@ -4,15 +4,15 @@ clean:
 	find . -type f -name "*.pyc" -exec rm {} +
 	find . -type d -name "__pycache__" -exec rmdir {} +
 
-deb_py3:
+deb_py3: clean
 	DEB_BUILD_OPTIONS=nocheck python3 setup.py --command-packages=stdeb.command bdist_deb
 
-covtests:
+covtests: clean
 	pylint python/nuc_wmi python/test/
 	coverage run --branch --source python/nuc_wmi -m unittest discover --pattern "*_test.py" --start-directory python/ --verbose
 	coverage report -m
 	coverage html
 
-test:
+test: clean
 	pylint python/nuc_wmi python/test/
 	python -m unittest discover --pattern "*_test.py" --start-directory python/ --verbose
