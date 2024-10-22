@@ -6,7 +6,7 @@ KDIR ?= /lib/modules/$(KVERSION)/build
 KVERSION ?= $(shell uname -r)
 PWD := $(shell pwd)
 
-.PHONY: clean all dkms-add dkms-build dkms-deb dkms-install dkms-rpm dkms-uninstall install
+.PHONY: clean all dkms-add dkms-build dkms-deb dkms-install dkms-rpm dkms-uninstall install install_build_deps install_build_deps_rhel
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(PWD) clean
@@ -40,3 +40,10 @@ dkms-uninstall:
 install:
 	$(MAKE) -C $(KDIR) M=$(PWD) modules_install
 	@depmod -a $(KVERSION)
+
+install_build_deps:
+	apt-get install -y build-essential debhelper dkms fakeroot linux-headers-$(KVERSION)
+
+install_build_deps_rhel:
+	yim groupinstall -y "Development Tools"
+	yum install -y dkms kernel-devel-$(KVERSION)

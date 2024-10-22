@@ -13,6 +13,9 @@ covtests: clean
 	coverage report -m
 	coverage html
 
+install_deb_build_deps:
+	apt-get install -y debhelper dh-python fakeroot python-all python3-all python3-setuptools python3-wheel python3-stdeb
+
 test: clean
 	pylint python/nuc_wmi python/test/
-	python -m unittest discover --pattern "*_test.py" --start-directory python/ --verbose
+	python3 -m unittest discover --pattern "*_test.py" --start-directory python/ --verbose
