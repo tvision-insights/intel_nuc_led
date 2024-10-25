@@ -56,8 +56,8 @@ setup( # pylint: disable=star-args
     download_url='https://github.com/tvision-insights/intel_nuc_led',
     entry_points={
         'console_scripts': [
-            'asus_nuc_wmi-query_led_group_attribute = asus_nuc_wmi.cli.query_led_group_attribute:query_led_group_attribute',
-            'asus_nuc_wmi-update_led_group_attribute = asus_nuc_wmi.cli.update_led_group_attribute:update_led_group_attribute'
+            'asus_nuc_wmi-query_led_group_attribute = asus_nuc_wmi.cli.query_led_group_attribute:query_led_group_attribute_cli',
+            'asus_nuc_wmi-update_led_group_attribute = asus_nuc_wmi.cli.update_led_group_attribute:update_led_group_attribute_cli'
         ]
     },
     license='GPLv2',
@@ -77,7 +77,7 @@ setup( # pylint: disable=star-args
     #     'setuptools'
     # ],
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version='1.0.0',
+    version='1.0.1',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )
