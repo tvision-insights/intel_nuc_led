@@ -10,17 +10,17 @@ function regression_test()
   uname -a
 
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'Power State Indicator' 'Normally OFF, ON when active' 'Blue' 'Solid' '1.0Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'Power State Indicator' 'Normally OFF, ON when active' 'Blue' 'Solid' '1.0Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'Power State Indicator' 'Normally OFF, ON when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'Power State Indicator' 'Normally OFF, ON when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'HDD Activity Indicator' 'Normally OFF, ON when active' 'Blue' 'Strobing' '0.1Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'HDD Activity Indicator' 'Normally OFF, ON when active' 'Blue' 'Strobing' '0.1Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'HDD Activity Indicator' 'Normally ON, OFF when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'HDD Activity Indicator' 'Normally ON, OFF when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'Software Indicator' 'Normally OFF, ON when active' 'Blue' 'Solid' '1.0Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'Software Indicator' 'Normally OFF, ON when active' 'Blue' 'Solid' '1.0Hz' '100' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
-  time asus_nuc_wmi-update_led_group_attribute 'Software Indicator' 'Normally OFF, ON when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
+  time asus_nuc_wmi-update_led_group_attribute --debug 'Software Indicator' 'Normally OFF, ON when active' 'Amber' 'Strobing' '0.1Hz' '50' 'Black' 'Solid' '1.0Hz' '0'
   time asus_nuc_wmi-query_led_group_attribute --debug
 
   set +x
