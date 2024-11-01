@@ -77,7 +77,7 @@ setup( # pylint: disable=star-args
     #     'setuptools'
     # ],
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version='1.0.2',
+    version='1.0.3',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )

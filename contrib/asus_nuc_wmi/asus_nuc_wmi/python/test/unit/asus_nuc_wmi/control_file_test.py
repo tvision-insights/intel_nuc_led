@@ -279,7 +279,7 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(asus_nuc_wmi.control_file.print is asus_nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 4: Test that byte strings outside of the 0-255 value raise an exception
-        byte_list = [0xFFF]
+        byte_list = [0x101, 0xFFF]
 
         with self.assertRaises(NucWmiError) as err:
             write_control_file(byte_list, control_file=self.control_file.name, debug=False)
@@ -318,3 +318,50 @@ class TestControlFile(unittest.TestCase):
             expected_byte_string,
             file=sys.stderr
         )
+
+
+    @patch('asus_nuc_wmi.control_file.print')
+    def test_write_control_file6(self, asus_nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(asus_nuc_wmi.control_file.print is asus_nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 6: Test that method id 32bit string outside of the 0-4294967295 value raise an exception
+        byte_list = [0x100000000]
+
+        with self.assertRaises(NucWmiError) as err:
+            write_control_file(byte_list, control_file=self.control_file.name, debug=False)
+
+        self.assertEqual(str(err.exception), 'Error (ASUS NUC LED method id 32bit value must be 0-4294967295)')
+
+        asus_nuc_wmi_print.assert_not_called()
+
+        # Reset
+        with open(self.control_file.name, 'wb', buffering=0) as fout:
+            fout.truncate()
+
+
+    @patch('asus_nuc_wmi.control_file.print')
+    def test_write_control_file7(self, asus_nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(asus_nuc_wmi.control_file.print is asus_nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 7: Test that no bytes passed in raises an exception
+        byte_list = []
+
+        with self.assertRaises(NucWmiError) as err:
+            write_control_file(byte_list, control_file=self.control_file.name, debug=False)
+
+        self.assertEqual(str(err.exception),
+                         'Error (ASUS NUC LED byte values must at least provide the first 32bit method id)')
+
+        asus_nuc_wmi_print.assert_not_called()
+
+        # Reset
+        with open(self.control_file.name, 'wb', buffering=0) as fout:
+            fout.truncate()

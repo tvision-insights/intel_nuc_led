@@ -68,7 +68,8 @@ MODULE_ALIAS("wmi:" ASUS_NUC_WMI_MGMT_GUID);
 
 extern struct proc_dir_entry *acpi_root_dir;
 
-#define INPUT_BUFFER_SIZE 257
+// Input buffer is for WMI method args only, does not include the required method id
+#define INPUT_BUFFER_SIZE 256
 static unsigned char input_buffer[INPUT_BUFFER_SIZE];
 
 #define OUTPUT_BUFFER_SIZE 256
@@ -80,13 +81,15 @@ static unsigned char output_buffer[OUTPUT_BUFFER_SIZE];
 static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                 size_t len, loff_t *data)
 {
+    __u32 currentHexValue;
+    __u32 methodId;
     char * kernelBuff;
     unsigned int kernelBuffI;
     unsigned int inputBufferI;
-    unsigned int currentByte;
     unsigned int currentNibble;
     unsigned char c;
     int inWhite; // boolean
+    int methodIdProcessed; // boolean
 
     struct acpi_buffer acpiInput;
     struct acpi_buffer acpiOutput = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -105,56 +108,68 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
     }
 
     // parse hex
-    currentByte = 0;
-    inWhite     = 1;
+    currentHexValue   = 0;
+    inWhite           = 1;
+    methodIdProcessed = 0;
 
     for(    kernelBuffI = 0, inputBufferI = 0 ;
-            kernelBuffI < len && inputBufferI < INPUT_BUFFER_SIZE ;
+            kernelBuffI < len && inputBufferI < INPUT_BUFFER_SIZE + 1 ;
             ++kernelBuffI )
     {
         c = kernelBuff[kernelBuffI];
 
         if( c >= '0' && c <= '9' ) {
             if( inWhite ) {
-                inWhite     = 0;
-                currentByte = 0;
+                inWhite         = 0;
+                currentHexValue = 0;
             }
             currentNibble = c - '0';
-            currentByte = ( currentByte << 4 ) + currentNibble;
+            currentHexValue = ( currentHexValue << 4 ) + currentNibble;
 
         } else if( c >= 'a' && c <= 'f' ) {
             if( inWhite ) {
-                inWhite     = 0;
-                currentByte = 0;
+                inWhite         = 0;
+                currentHexValue = 0;
             }
             currentNibble = c - 'a' + 10;
-            currentByte = ( currentByte << 4 ) + currentNibble;
+            currentHexValue = ( currentHexValue << 4 ) + currentNibble;
 
         } else if( c >= 'A' && c <= 'F' ) {
             if( inWhite ) {
-                inWhite     = 0;
-                currentByte = 0;
+                inWhite         = 0;
+                currentHexValue = 0;
             }
-            currentNibble = c - 'A' + 10;
-            currentByte = ( currentByte << 4 ) + currentNibble;
+            currentNibble   = c - 'A' + 10;
+            currentHexValue = ( currentHexValue << 4 ) + currentNibble;
 
         } else if( c == ' ' || c == '\t' || c == '\n' ) {
             if( !inWhite ) {
                 inWhite = 1;
-                input_buffer[ inputBufferI++ ] = currentByte;
-                currentByte = 0;
+                if(!methodIdProcessed) {
+                  methodIdProcessed = 1;
+                  methodId = currentHexValue;
+                } else {
+                  input_buffer[ inputBufferI++ ] = (unsigned int) currentHexValue;
+                }
+                currentHexValue = 0;
             }
-
         } else {
             pr_warn("ASUS NUC WMI invalid character: %c\n", c );
             return -EIO;
         }
     }
-    if( !inWhite && inputBufferI < INPUT_BUFFER_SIZE ) {
-        input_buffer[ inputBufferI++ ] = currentByte;
+    if( !inWhite && inputBufferI < INPUT_BUFFER_SIZE) {
+        if(!methodIdProcessed) {
+            methodIdProcessed = 1;
+            methodId = currentHexValue;
+        } else {
+            input_buffer[ inputBufferI++ ] = (unsigned int) currentHexValue;
+        }
     }
-    if( inputBufferI != INPUT_BUFFER_SIZE ) {
-        pr_warn("ASUS NUC WMI received wrong number of bytes (%u needed): %d\n", INPUT_BUFFER_SIZE, inputBufferI );
+    if((inputBufferI + methodIdProcessed) != INPUT_BUFFER_SIZE + 1) {
+        pr_warn("ASUS NUC WMI received wrong number of bytes (%u needed): %d\n",
+                INPUT_BUFFER_SIZE + 1,
+                inputBufferI + methodIdProcessed);
         return -EIO;
     }
 
@@ -162,10 +177,10 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 
     // prepare wmi call
 
-    acpiInput.length = (acpi_size) inputBufferI-1;
-    acpiInput.pointer = input_buffer+1;
+    acpiInput.length = (acpi_size) inputBufferI;
+    acpiInput.pointer = input_buffer;
 
-    acpiStatus = wmi_evaluate_method(ASUS_NUC_WMI_MGMT_GUID, 0, input_buffer[0],
+    acpiStatus = wmi_evaluate_method(ASUS_NUC_WMI_MGMT_GUID, 0, methodId,
                                  &acpiInput, &acpiOutput);
 
     if (ACPI_FAILURE(acpiStatus)) {

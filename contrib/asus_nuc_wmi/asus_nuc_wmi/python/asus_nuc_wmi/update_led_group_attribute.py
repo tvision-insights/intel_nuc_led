@@ -5,7 +5,7 @@
 from asus_nuc_wmi import NucWmiError, RETURN_ERROR
 from asus_nuc_wmi.control_file import read_control_file, write_control_file
 
-METHOD_ID = 0x66
+METHOD_ID = 0x102
 
 FUNCTION_NUMBER = [
     None,

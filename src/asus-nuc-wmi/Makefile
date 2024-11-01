@@ -1,7 +1,7 @@
 obj-m := asus_nuc_wmi.o
 
 DKMS_MODULE := asus-nuc-wmi
-DKMS_MODULE_VERSION := 1.0
+DKMS_MODULE_VERSION := 1.1
 KDIR ?= /lib/modules/$(KVERSION)/build
 KVERSION ?= $(shell uname -r)
 PWD := $(shell pwd)
