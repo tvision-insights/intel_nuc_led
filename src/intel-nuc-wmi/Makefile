@@ -1,7 +1,7 @@
 obj-m := nuc_wmi.o
 
 DKMS_MODULE := intel-nuc-wmi
-DKMS_MODULE_VERSION := 2.1
+DKMS_MODULE_VERSION := 2.2
 KDIR ?= /lib/modules/$(KVERSION)/build
 KVERSION ?= $(shell uname -r)
 PWD := $(shell pwd)

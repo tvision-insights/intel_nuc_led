@@ -55,9 +55,15 @@ def write_control_file(int_byte_list, control_file=None, debug=False):
       `nuc_wmi.NucWmiError` for input value errors.
     """
 
-    for int_byte in int_byte_list:
-        if int(int_byte) < 0 or int(int_byte) > 255:
-            raise NucWmiError('Error (Intel NUC LED byte values must be 0-255)')
+    if len(int_byte_list) > 0:
+        if int(int_byte_list[0]) < 0 or int(int_byte_list[0]) > 4294967295:
+            raise NucWmiError('Error (Intel NUC LED method id 32bit value must be 0-4294967295)')
+
+        for int_byte in int_byte_list[1:]:
+            if int(int_byte) < 0 or int(int_byte) > 255:
+                raise NucWmiError('Error (Intel NUC LED byte values must be 0-255)')
+    else:
+        raise NucWmiError('Error (Intel NUC LED byte values must at least provide the first 32bit method id)')
 
     raw_hex_byte_string = ' '.join(
         ['{:02x}'.format(int(int_byte)) for int_byte in int_byte_list + ([0] * (5 - len(int_byte_list)))]
