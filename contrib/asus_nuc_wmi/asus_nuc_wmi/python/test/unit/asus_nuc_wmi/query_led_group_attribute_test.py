@@ -102,7 +102,8 @@ class TestQueryLedGroupAttribute(unittest.TestCase):
 
         returned_query_led_group_attribute = query_led_group_attribute(
             control_file=None,
-            debug=False
+            debug=False,
+            metadata=None
         )
 
         asus_nuc_wmi_write_control_file.assert_called_with(
@@ -157,7 +158,8 @@ class TestQueryLedGroupAttribute(unittest.TestCase):
         with self.assertRaises(NucWmiError) as err:
             query_led_group_attribute(
                 control_file=None,
-                debug=False
+                debug=False,
+                metadata=None
             ) # Set incorrect led indicator option
 
         asus_nuc_wmi_write_control_file.assert_called_with(
@@ -167,3 +169,76 @@ class TestQueryLedGroupAttribute(unittest.TestCase):
         )
 
         self.assertEqual(str(err.exception), 'Error (Undefined device)')
+
+
+    @patch('asus_nuc_wmi.query_led_group_attribute.read_control_file')
+    @patch('asus_nuc_wmi.query_led_group_attribute.write_control_file')
+    def test_query_led_group_attribute3(self, asus_nuc_wmi_write_control_file, asus_nuc_wmi_read_control_file):
+        """
+        Tests that `query_led_group_attribute` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(asus_nuc_wmi.query_led_group_attribute.read_control_file is asus_nuc_wmi_read_control_file)
+        self.assertTrue(asus_nuc_wmi.query_led_group_attribute.write_control_file is asus_nuc_wmi_write_control_file)
+
+        # Branch 3: Test that query_led_group_attribute sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed when we request raw bytes.
+
+        expected_write_byte_list = [0x00] * 3
+
+        expected_write_byte_list[0] = METHOD_ID
+        expected_write_byte_list[1] = FUNCTION_NUMBER.index('query_led_group_attribute')
+        expected_write_byte_list[2] = 0x00
+
+        #expected_write_byte_list[7] = 0x00
+        # expected_write_byte_list[8] = 0x01
+        # expected_write_byte_list[28] = LED_INDICATOR_OPTION.index('Software Indicator')
+        # expected_write_byte_list[29] = CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index(
+        #     'Normally OFF, ON when active'
+        # )
+        # expected_write_byte_list[30] = LED_COLOR.index('Red')
+        # expected_write_byte_list[31] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        # expected_write_byte_list[32] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        # expected_write_byte_list[33] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+        # expected_write_byte_list[37] = LED_COLOR.index('Amber')
+        # expected_write_byte_list[38] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        # expected_write_byte_list[39] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        # expected_write_byte_list[40] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+
+        read_byte_list = [0x00] * 256
+
+        read_byte_list[0] = 0x00
+        read_byte_list[27] = LED_INDICATOR_OPTION.index('Software Indicator')
+        read_byte_list[28] = CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index('Normally OFF, ON when active')
+        read_byte_list[29] = LED_COLOR.index('Red')
+        read_byte_list[30] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        read_byte_list[31] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        read_byte_list[32] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+        read_byte_list[36] = LED_COLOR.index('Amber')
+        read_byte_list[37] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        read_byte_list[38] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        read_byte_list[39] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+
+        expected_query_led_group_attribute = read_byte_list
+
+        asus_nuc_wmi_read_control_file.return_value = read_byte_list
+
+        returned_query_led_group_attribute = query_led_group_attribute(
+            control_file=None,
+            debug=False,
+            metadata={
+                'nuc_wmi_spec': {
+                    'function_return_type': {
+                        'query_led_group_attribute': 'raw_bytes'
+                    }
+                }
+            }
+        )
+
+        asus_nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False
+        )
+
+        self.assertEqual(returned_query_led_group_attribute, expected_query_led_group_attribute)

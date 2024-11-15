@@ -85,7 +85,8 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
             LED_BLINK_FREQUENCY.index('1.0Hz'),
             LED_BRIGHTNESS_MULTI_COLOR.index('100'),
             control_file=None,
-            debug=False
+            debug=False,
+            metadata=None
         )
 
         asus_nuc_wmi_write_control_file.assert_called_with(
@@ -149,7 +150,8 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
                 LED_BLINK_FREQUENCY.index('1.0Hz'),
                 LED_BRIGHTNESS_MULTI_COLOR.index('100'),
                 control_file=None,
-                debug=False
+                debug=False,
+                metadata=None
             ) # Set incorrect led indicator option
 
         asus_nuc_wmi_write_control_file.assert_called_with(
@@ -159,3 +161,130 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
         )
 
         self.assertEqual(str(err.exception), 'Error (Undefined device)')
+
+
+    @patch('asus_nuc_wmi.update_led_group_attribute.read_control_file')
+    @patch('asus_nuc_wmi.update_led_group_attribute.write_control_file')
+    def test_update_led_group_attribute3(self, asus_nuc_wmi_write_control_file, asus_nuc_wmi_read_control_file):
+        """
+        Tests that `update_led_group_attribute` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(asus_nuc_wmi.update_led_group_attribute.read_control_file is asus_nuc_wmi_read_control_file)
+        self.assertTrue(asus_nuc_wmi.update_led_group_attribute.write_control_file is asus_nuc_wmi_write_control_file)
+
+        # Branch 3: Test that update_led_group_attribute sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed when provided a default query led
+        #           group attribute byte list.
+
+        expected_write_byte_list = [0x00] * 257
+
+        expected_write_byte_list[0] = METHOD_ID
+        expected_write_byte_list[1] = FUNCTION_NUMBER.index('update_led_group_attribute')
+        expected_write_byte_list[7] = 0x00
+        expected_write_byte_list[8] = 0x01
+        expected_write_byte_list[28] = LED_INDICATOR_OPTION.index('Software Indicator')
+        expected_write_byte_list[29] = CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index(
+            'Normally OFF, ON when active'
+        )
+        expected_write_byte_list[30] = LED_COLOR.index('Red')
+        expected_write_byte_list[31] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        expected_write_byte_list[32] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        expected_write_byte_list[33] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+        expected_write_byte_list[37] = LED_COLOR.index('Amber')
+        expected_write_byte_list[38] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        expected_write_byte_list[39] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        expected_write_byte_list[40] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+
+        read_byte_list = [0x00] * 256
+
+        asus_nuc_wmi_read_control_file.return_value = read_byte_list
+
+        returned_update_led_group_attribute = update_led_group_attribute(
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index('Normally OFF, ON when active'),
+            LED_COLOR.index('Red'),
+            LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid'),
+            LED_BLINK_FREQUENCY.index('1.0Hz'),
+            LED_BRIGHTNESS_MULTI_COLOR.index('100'),
+            LED_COLOR.index('Amber'),
+            LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid'),
+            LED_BLINK_FREQUENCY.index('1.0Hz'),
+            LED_BRIGHTNESS_MULTI_COLOR.index('100'),
+            control_file=None,
+            debug=False,
+            metadata={
+                'query_led_group_attribute_raw_bytes': [0x00] * 256
+            }
+        )
+
+        asus_nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False
+        )
+
+        self.assertEqual(returned_update_led_group_attribute, None)
+
+
+    @patch('asus_nuc_wmi.update_led_group_attribute.read_control_file')
+    @patch('asus_nuc_wmi.update_led_group_attribute.write_control_file')
+    def test_update_led_group_attribute4(self, asus_nuc_wmi_write_control_file, asus_nuc_wmi_read_control_file):
+        """
+        Tests that `update_led_group_attribute` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(asus_nuc_wmi.update_led_group_attribute.read_control_file is asus_nuc_wmi_read_control_file)
+        self.assertTrue(asus_nuc_wmi.update_led_group_attribute.write_control_file is asus_nuc_wmi_write_control_file)
+
+        # Branch 4: Test that update_led_group_attribute raises an exception when the provided default query led
+        #           group attribute byte list is of invalid length.
+
+        expected_write_byte_list = [0x00] * 257
+
+        expected_write_byte_list[0] = METHOD_ID
+        expected_write_byte_list[1] = FUNCTION_NUMBER.index('update_led_group_attribute')
+        expected_write_byte_list[7] = 0x00
+        expected_write_byte_list[8] = 0x01
+        expected_write_byte_list[28] = LED_INDICATOR_OPTION.index('Software Indicator')
+        expected_write_byte_list[29] = CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index(
+            'Normally OFF, ON when active'
+        )
+        expected_write_byte_list[30] = LED_COLOR.index('Red')
+        expected_write_byte_list[31] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        expected_write_byte_list[32] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        expected_write_byte_list[33] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+        expected_write_byte_list[37] = LED_COLOR.index('Amber')
+        expected_write_byte_list[38] = LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid')
+        expected_write_byte_list[39] = LED_BLINK_FREQUENCY.index('1.0Hz')
+        expected_write_byte_list[40] = LED_BRIGHTNESS_MULTI_COLOR.index('100')
+
+        read_byte_list = [0x00] * 256
+
+        asus_nuc_wmi_read_control_file.return_value = read_byte_list
+
+        with self.assertRaises(NucWmiError) as err:
+            update_led_group_attribute(
+                LED_INDICATOR_OPTION.index('Software Indicator'),
+                CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index('Normally OFF, ON when active'),
+                LED_COLOR.index('Red'),
+                LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid'),
+                LED_BLINK_FREQUENCY.index('1.0Hz'),
+                LED_BRIGHTNESS_MULTI_COLOR.index('100'),
+                LED_COLOR.index('Amber'),
+                LED_BLINK_BEHAVIOR_MULTI_COLOR.index('Solid'),
+                LED_BLINK_FREQUENCY.index('1.0Hz'),
+                LED_BRIGHTNESS_MULTI_COLOR.index('100'),
+                control_file=None,
+                debug=False,
+                metadata={
+                    'query_led_group_attribute_raw_bytes': [0x00] * 255
+                }
+            )
+
+        asus_nuc_wmi_write_control_file.assert_not_called()
+
+        self.assertEqual(
+            str(err.exception),
+            'ASUS NUC WMI query_led_group_attributes_raw_bytes default must a list of 256 bytes'
+        )

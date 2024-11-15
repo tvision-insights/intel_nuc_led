@@ -13,7 +13,7 @@ FUNCTION_NUMBER = [
 ]
 
 
-def update_led_group_attribute(
+def update_led_group_attribute( # pylint: disable=too-many-locals
         led_indicator_option,
         hdd_activity_behavior,
         led_color,
@@ -25,7 +25,8 @@ def update_led_group_attribute(
         sleep_state_led_blink_frequency,
         sleep_state_led_brightness,
         control_file=None,
-        debug=False
+        debug=False,
+        metadata=None
 ):
     """
     Update all LED group attributes.
@@ -40,6 +41,7 @@ def update_led_group_attribute(
       led_brightness: Index of `asus_nuc_wmi.LED_BRIGHTNESS_MULTI_COLOR` to set Power Button LED brightness.
       led_color: Index of `asus_nuc_wmi.LED_COLOR' to set Power Button LED color.
       led_indicator_option: Index of `asus_nuc_wmi.LED_INDICATOR_OPTION` to set Power Button LED indicitator option.
+      metadata: Metadata that may be required to change functional behavior.
       sleep_state_led_color: Index of `asus_nuc_wmi.LED_COLOR' to set Power Button LED sleep state color.
       sleep_state_led_blink_behavior: Index of `asus_nuc_wmi.LED_BLINK_BEHAVIOR_MULTI_COLOR` to set Power Button LED
                                       sleep state blink behavior.
@@ -54,9 +56,14 @@ def update_led_group_attribute(
 
     update_led_group_attribute_byte_list = [0x00] * 257
 
+    if metadata and issubclass(metadata.get('query_led_group_attribute_raw_bytes', None).__class__, tuple):
+        if len(metadata['query_led_group_attribute_raw_bytes']) != 256:
+            raise NucWmiError('ASUS NUC WMI query_led_group_attribute_raw_bytes default must a list of 256 bytes')
+
+        update_led_group_attribute_byte_list[1:] = metadata['query_led_group_attribute_raw_bytes']
+
     update_led_group_attribute_byte_list[0] = METHOD_ID
     update_led_group_attribute_byte_list[1] = FUNCTION_NUMBER.index('update_led_group_attribute')
-    update_led_group_attribute_byte_list[7] = 0x00
     update_led_group_attribute_byte_list[8] = 0x01
     update_led_group_attribute_byte_list[28] = led_indicator_option
     update_led_group_attribute_byte_list[29] = hdd_activity_behavior

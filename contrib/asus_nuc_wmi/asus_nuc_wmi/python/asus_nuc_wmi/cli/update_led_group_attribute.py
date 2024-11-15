@@ -11,6 +11,7 @@ from json import dumps
 from asus_nuc_wmi import CONTROL_FILE, CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR, LED_COLOR
 from asus_nuc_wmi import LED_BLINK_BEHAVIOR_MULTI_COLOR, LED_BLINK_FREQUENCY, LED_BRIGHTNESS_MULTI_COLOR
 from asus_nuc_wmi import LED_INDICATOR_OPTION, LOCK_FILE
+from asus_nuc_wmi.query_led_group_attribute import query_led_group_attribute
 from asus_nuc_wmi.update_led_group_attribute import update_led_group_attribute
 from asus_nuc_wmi.utils import acquire_file_lock
 
@@ -131,6 +132,18 @@ def update_led_group_attribute_cli(cli_args=None):
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
             acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
+            query_led_group_attribute_raw_bytes = query_led_group_attribute(
+                control_file=args.control_file,
+                debug=args.debug,
+                metadata={
+                    'nuc_wmi_spec': {
+                        'function_return_type': {
+                            'query_led_group_attribute': 'raw_bytes'
+                        }
+                    }
+                }
+            )
+
             update_led_group_attribute(
                 LED_INDICATOR_OPTION.index(args.led_indicator_option),
                 CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_BEHAVIOR.index(args.hdd_activity_behavior),
@@ -143,7 +156,10 @@ def update_led_group_attribute_cli(cli_args=None):
                 LED_BLINK_FREQUENCY.index(args.sleep_state_led_blink_frequency),
                 LED_BRIGHTNESS_MULTI_COLOR.index(args.sleep_state_led_brightness),
                 control_file=args.control_file,
-                debug=args.debug
+                debug=args.debug,
+                metadata={
+                    'query_led_group_attribute_raw_bytes': query_led_group_attribute_raw_bytes
+                }
             )
 
             print(
