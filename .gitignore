@@ -6,6 +6,3 @@
 *.mod.c
 .tmp_versions/
 *~
-pkg/
-src/
-intel-nuc-wmi-*.pkg*
