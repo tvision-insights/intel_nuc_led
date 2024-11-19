@@ -42,7 +42,7 @@ install:
 	@depmod -a $(KVERSION)
 
 install_build_deps:
-	apt-get install -y build-essential debhelper dkms fakeroot linux-headers-$(KVERSION)
+	apt-get install -y build-essential debhelper dkms fakeroot
 
 install_build_deps_rhel:
 	yim groupinstall -y "Development Tools"

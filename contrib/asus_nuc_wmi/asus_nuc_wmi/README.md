@@ -157,4 +157,9 @@ implementation make it out into the wild.
 
 ### NUC 14
 
-* None currently.
+* BIOS before 0035 may not correctly expose the NUC WMI methods for use by the kernel.
+* Due to bugs in the BIOS, the update led group attribute function does not properly internally retrieve all
+  necessary values from the qeury led group attribute function and as a result you must start the update led
+  group attributes input values with the output of a query led group attribute function call and then overlay
+  input values for update led group attribute bytes 0, 7, 27-32, 36-39 before appending these 256 bytes to the
+  method id to call the update led group function.

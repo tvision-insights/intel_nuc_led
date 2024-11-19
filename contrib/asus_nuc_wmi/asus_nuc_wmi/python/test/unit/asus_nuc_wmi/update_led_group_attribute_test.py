@@ -214,7 +214,7 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
             control_file=None,
             debug=False,
             metadata={
-                'query_led_group_attribute_raw_bytes': [0x00] * 256
+                'query_led_group_attribute_raw_bytes': tuple([0x00] * 256)
             }
         )
 
@@ -278,7 +278,7 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
                 control_file=None,
                 debug=False,
                 metadata={
-                    'query_led_group_attribute_raw_bytes': [0x00] * 255
+                    'query_led_group_attribute_raw_bytes': tuple([0x00] * 255)
                 }
             )
 
@@ -286,5 +286,5 @@ class TestUpdateLedGroupAttribute(unittest.TestCase):
 
         self.assertEqual(
             str(err.exception),
-            'ASUS NUC WMI query_led_group_attributes_raw_bytes default must a list of 256 bytes'
+            'ASUS NUC WMI query_led_group_attribute_raw_bytes default must a list of 256 bytes'
         )
