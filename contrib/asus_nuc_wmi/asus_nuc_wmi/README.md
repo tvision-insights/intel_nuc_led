@@ -166,6 +166,8 @@ implementation make it out into the wild.
 
 ### NUC 14 Essential N250/N355
 
+* WARNING: If the BIOS for the N250 is configured in `balanced` power mode, the CPU will not frequency scale to
+  highest available CPU frequency unless you configure it to use `performance` power mode.
 * BIOS before MNTWLCPX.0022.2025.0428.1348 has bugs in the WMI calls that prevent them from updating the LED with
   any parameters that are passed in but no errors are ever thrown.
 * BIOS incorrectly uses Light Green instead of Amber LED color, this is not fixable from userland.
