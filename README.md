@@ -34,7 +34,7 @@ running on other NUCs with software-controllable LEDs, and other distros.
 
 Requirements:
 
-* Intel NUC 6 through 12, ASUS NUC 12, or ASUS NUC 14
+* Intel NUC 6 through 12, ASUS NUC 12, ASUS NUC 14 (original), ASUS NUC 14 Essential (N250), ASUS NUC 14 Essential (N355)
 * ACPI/WMI support in kernel
 
 ## LED Header Breakout Boards

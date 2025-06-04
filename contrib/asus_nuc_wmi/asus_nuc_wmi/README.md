@@ -163,3 +163,14 @@ implementation make it out into the wild.
   group attributes input values with the output of a query led group attribute function call and then overlay
   input values for update led group attribute bytes 0, 7, 27-32, 36-39 before appending these 256 bytes to the
   method id to call the update led group function.
+
+### NUC 14 Essential N250/N355
+
+* BIOS before MNTWLCPX.0022.2025.0428.1348 has bugs in the WMI calls that prevent them from updating the LED with
+  any parameters that are passed in but no errors are ever thrown.
+* BIOS incorrectly uses Light Green instead of Amber LED color, this is not fixable from userland.
+* Due to bugs in the BIOS, the update led group attribute function does not properly internally retrieve all
+  necessary values from the qeury led group attribute function and as a result you must start the update led
+  group attributes input values with the output of a query led group attribute function call and then overlay
+  input values for update led group attribute bytes 0, 7, 27-32, 36-39 before appending these 256 bytes to the
+  method id to call the update led group function.
